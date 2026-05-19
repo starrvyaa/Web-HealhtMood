@@ -456,7 +456,35 @@ th:last-child { border-radius: 0 10px 10px 0; }
 .auth-card p { font-size: 12px; }
 .auth-card .btn { width: 100%; margin-top: 12px; }
 .auth-card a { text-decoration: underline; }
+.auth-card label {
+    position: relative;
+    display: block;
+    width: 100%;
+}
 
+.auth-card input {
+    width: 100%;
+    height: 56px;
+
+    padding: 0 55px 0 22px;
+/* atas bawah | kanan | kiri */
+
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.8);
+
+    background: rgba(255,255,255,0.12);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+
+    box-sizing: border-box;
+}
+.password-toggle {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
 .game-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

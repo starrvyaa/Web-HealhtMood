@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>
             <input type="email" name="email" value="admin@healthmood.test" placeholder="✉  Email" required>
         </label>
+        
         <label>
             <input type="password" name="password" placeholder="🔒  Password" required>
         </label>
