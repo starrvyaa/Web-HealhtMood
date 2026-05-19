@@ -1,0 +1,43 @@
+CREATE DATABASE IF NOT EXISTS healthmood
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+USE healthmood;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(120) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS moods (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    mood_date DATE NOT NULL,
+    mood_label VARCHAR(40) NOT NULL,
+    mood_score TINYINT NOT NULL,
+    note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_moods_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS sleeps (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    sleep_date DATE NOT NULL,
+    sleep_start TIME NOT NULL DEFAULT '21:25:00',
+    sleep_end TIME NOT NULL DEFAULT '06:30:00',
+    hours DECIMAL(4,2) NOT NULL,
+    quality TINYINT NOT NULL,
+    note TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_sleeps_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+INSERT INTO users (name, email, password)
+VALUES ('Admin HealthMood', 'admin@healthmood.test', '$2y$10$7F3ohuzYTbOS0wa0IH/Ohe6lH1uBBjMOvgt36MXrSvqj/bTxFySri')
+ON DUPLICATE KEY UPDATE name = VALUES(name);

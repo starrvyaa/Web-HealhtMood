@@ -1,0 +1,44 @@
+</main>
+<footer class="site-footer">
+    <div class="footer-brand">
+        <div class="footer-logo-line">
+            <img src="public/WhatsApp-Image-2026-04-29-at-21-03-52-removebg-preview-1@2x.png" alt="Logo HealthMood">
+            <h2>HealthMood</h2>
+        </div>
+        <div class="partner-logos">
+            <img src="public/HEADER-NEW-1@2x.png" alt="Partner logo">
+            <img src="public/HEADER-NEW-2@2x.png" alt="Partner logo">
+        </div>
+        <div class="footer-mini">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Our History</a>
+            <a href="#">What We Do</a>
+        </div>
+    </div>
+    <div>
+        <h3>About us</h3>
+        <p>Pahami dirimu, perbaiki tidurmu, dan temukan ketenangan setiap hari. Kolom Tengah (Navigasi)</p>
+    </div>
+    <div>
+        <h3>Layanan</h3>
+        <a href="<?= is_logged_in() ? 'mood.php' : 'login.php' ?>">Cek Mood</a>
+        <a href="<?= is_logged_in() ? 'tidur.php' : 'login.php' ?>">Catatan Tidur</a>
+        <a href="<?= is_logged_in() ? 'game.php' : 'login.php' ?>">Refreshing Game</a>
+        <a href="<?= is_logged_in() ? 'laporan_mood.php' : 'login.php' ?>">Laporan Mingguan</a>
+    </div>
+    <div>
+        <h3>Bantuan</h3>
+        <a href="#">Pusat Edukasi</a>
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Hubungi Kami</a>
+    </div>
+    <div>
+        <h3>Contact us</h3>
+        <a href="tel:+123456789">Call:<br>+12 3456789</a>
+        <a href="mailto:email@gmail.com">Email:<br>email@gmail.com</a>
+    </div>
+    <p class="copyright">&copy; 2026 HEALTHMOOD. All rights reserved.</p>
+</footer>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
