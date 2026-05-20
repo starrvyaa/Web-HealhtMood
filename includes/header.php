@@ -8,12 +8,15 @@ $title = $title ?? 'HealthMood';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title) ?> - HealthMood</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css?v=game-assets-folder-1">
 </head>
-<body>
+<body class="<?= $active ? 'page-' . e($active) : 'page-default' ?>">
 <header class="site-header">
     <a class="brand" href="index.php" aria-label="HealthMood Home">
-        <img src="public/WhatsApp-Image-2026-04-29-at-21-03-52-removebg-preview-1@2x.png" alt="Logo HealthMood">
+        <img src="assets/images/game/WhatsApp-Image-2026-04-29-at-21-03-52-removebg-preview-1@2x.png" alt="Logo HealthMood">
         <span>HEALTHMOOD</span>
     </a>
     <nav class="main-nav" aria-label="Menu utama">
@@ -24,17 +27,21 @@ $title = $title ?? 'HealthMood';
     <div class="header-actions">
         <form class="search-box" role="search">
             <input type="search" placeholder="SEARCH" aria-label="Search">
-            <span class="search-icon" aria-hidden="true"></span>
+            <img class="search-icon-img" src="assets/images/game/ic-baseline-search.svg" alt="" aria-hidden="true">
         </form>
-        <button class="bell" type="button" title="Notifikasi" aria-label="Notifikasi"><span></span></button>
+        <button class="bell" type="button" title="Notifikasi" aria-label="Notifikasi">
+            <img src="assets/images/game/ion-notifcations.svg" alt="" aria-hidden="true">
+        </button>
         <?php if (is_logged_in()): ?>
-            <button class="logout-trigger" type="button" title="Logout" aria-label="Logout"><span></span></button>
+            <button class="logout-trigger" type="button" title="Logout" aria-label="Logout">
+                <img src="assets/images/game/mdi-logout.svg" alt="" aria-hidden="true">
+            </button>
         <?php else: ?>
             <a class="login-link" href="login.php">LOGIN</a>
         <?php endif; ?>
     </div>
 </header>
-<main class="page">
+<main class="page <?= $active === 'game' ? 'game-page' : '' ?>">
 
 <div class="confirm-modal" id="logoutModal" aria-hidden="true">
     <div class="confirm-card">
