@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </label>
         <label class="password-field">
             <input id="loginPassword" type="password" name="password" placeholder="Password" required>
-            <button class="eye-toggle" type="button" data-toggle-password="#loginPassword" aria-label="Lihat password" style="margin-right: 8px;"></button>
+            <button class="eye-toggle" type="button" data-toggle-password="#loginPassword" aria-label="Lihat password" style="margin-right: 10px;"></button>
         </label>
         <p><a href="0">Forgot Password?</a></p>
         <button class="btn" type="submit">LOGIN</button>
