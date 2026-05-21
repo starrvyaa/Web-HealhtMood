@@ -61,7 +61,12 @@ require 'includes/header.php';
                         <td class="actions">
                             <a class="btn icon icon-view" href="tidur.php?view=<?= e($row['id']) ?>" title="Lihat"><span></span></a>
                             <a class="btn icon icon-edit yellow" href="tidur.php?edit=<?= e($row['id']) ?>" title="Edit"><span></span></a>
-                            <a class="btn icon icon-trash danger" href="tidur.php?delete=<?= e($row['id']) ?>" onclick="return confirm('Hapus data tidur ini?')" title="Hapus"><span></span></a>
+                            <a 
+                                class="btn icon icon-trash danger delete-btn" 
+                                href="tidur.php?delete=<?= e($row['id']) ?>" 
+                                title="Hapus">
+                                <span></span>
+                            </a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

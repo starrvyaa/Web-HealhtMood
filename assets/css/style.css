@@ -1266,3 +1266,136 @@ body.page-game .footer-bottom a {
     background: #fff;
 }
 
+/* ========================= */
+/* POPUP DELETE */
+/* ========================= */
+
+.delete-popup-overlay{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+
+    animation: fadePopup 0.25s ease;
+}
+
+.delete-popup-box{
+    width:420px;
+    background:#fff;
+
+    border-radius:28px;
+
+    padding:35px 30px;
+
+    text-align:center;
+
+    box-shadow:
+    0 10px 40px rgba(0,0,0,0.15);
+
+    animation: popupScale 0.25s ease;
+}
+
+.delete-popup-icon{
+    width:85px;
+    height:85px;
+
+    margin:auto;
+    margin-bottom:18px;
+
+    border-radius:50%;
+
+    background:rgba(231,76,60,0.12);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:42px;
+}
+
+.delete-popup-box h2{
+    font-size:30px;
+    color:#304858;
+    margin-bottom:10px;
+    font-weight:800;
+}
+
+.delete-popup-box p{
+    font-size:16px;
+    color:#666;
+    line-height:1.6;
+    margin-bottom:28px;
+}
+
+.delete-popup-actions{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+}
+
+.cancel-delete-btn,
+.confirm-delete-btn{
+    border:none;
+    padding:13px 24px;
+
+    border-radius:14px;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:0.25s ease;
+}
+
+.cancel-delete-btn{
+    background:#dfe6ec;
+    color:#304858;
+}
+
+.cancel-delete-btn:hover{
+    background:#cfd8df;
+    transform:translateY(-2px);
+}
+
+.confirm-delete-btn{
+    background:linear-gradient(90deg,#e74c3c,#ff6b5e);
+    color:white;
+    text-decoration:none;
+}
+
+.confirm-delete-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(231,76,60,0.35);
+}
+
+/* ANIMATION */
+
+@keyframes fadePopup{
+    from{
+        opacity:0;
+    }
+    to{
+        opacity:1;
+    }
+}
+
+@keyframes popupScale{
+    from{
+        transform:scale(0.8);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
