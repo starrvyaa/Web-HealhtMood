@@ -6,7 +6,7 @@ if (is_logged_in()) {
 }
 
 $error = '';
-
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$pdo) {
         $error = 'Database belum tersambung. Import database.sql dulu di phpMyAdmin.';
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input id="loginPassword" type="password" name="password" placeholder="Password" required>
             <button class="eye-toggle" type="button" data-toggle-password="#loginPassword" aria-label="Lihat password" style="margin-right: 10px;"></button>
         </label>
-        <p><a href="0">Forgot Password?</a></p>
+        <p><a href="forgot_password.php">Forgot Password?</a></p>
         <button class="btn" type="submit">LOGIN</button>
         <p>Don't have account? <a href="register.php">Create here</a></p>
         <div class="social-row">
