@@ -37,13 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Forgot Password - HealthMood</title>
+    <title>Lupa Sandi - HealthMood</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="auth-page">
     <form class="auth-card" method="post">
         <img src="public/WhatsApp-Image-2026-04-29-at-21-03-52-removebg-preview-1@2x.png" alt="HealthMood">
-        <h1>Forgot Password</h1>
+        <h1>Lupa Sandi?</h1>
         <p>Masukkan email kamu. Kami akan membantu proses reset password.</p>
 
         <?php if ($error): ?><p class="message error"><?= e($error) ?></p><?php endif; ?>
@@ -53,9 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="email" name="email" placeholder="Email" required>
         </label>
 
-        <button class="btn" type="submit">SEND RESET LINK</button>
+        <button class="btn" type="submit">Kirim Link </button>
         <p style="margin-top: 12px;">
-            <a href="login.php">Back to Login</a>
+            <a href="login.php">Kembali ke menu login</a>
         </p>
 
         <script src="assets/js/app.js"></script>

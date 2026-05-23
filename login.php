@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - HealthMood</title>
+    <title>Masuk - HealthMood</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="auth-page">
@@ -48,9 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input id="loginPassword" type="password" name="password" placeholder="Password" required>
             <button class="eye-toggle" type="button" data-toggle-password="#loginPassword" aria-label="Lihat password" style="margin-right: 10px;"></button>
         </label>
-        <p><a href="forgot_password.php">Forgot Password?</a></p>
-        <button class="btn" type="submit">LOGIN</button>
-        <p>Don't have account? <a href="register.php">Create here</a></p>
+        <p><a href="forgot_password.php">Lupa Sandi?</a></p>
+        <button class="btn" type="submit">MASUK</button>
+        <p>Tidak punya akun?<a href="register.php">Daftar disini</a></p>
         <div class="social-row">
             <img src="public/google.png" alt="Google" style="width: 50px; height: 50px; vertical-align: middle; background-color: white; border-radius: 50%;">
             <img src="public/facebook.png" alt="Facebook" style="width: 50px; height: 50px; vertical-align: middle; background-color: white; border-radius: 50%;">
