@@ -9,8 +9,7 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Page ini hanya menampilkan proses "forgot password" secara UI.
-    // Backend reset password (token/email) belum tersedia di project ini.
+
     if (!$pdo) {
         $error = 'Database belum tersambung. Import database.sql dulu di phpMyAdmin.';
     } else {
