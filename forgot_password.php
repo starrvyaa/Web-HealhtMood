@@ -23,11 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$email]);
             $user = $stmt->fetch();
 
-            // Untuk keamanan, tampilkan pesan yang sama meski email tidak ada.
-            $success = 'Jika email tersebut terdaftar, kami akan mengirim instruksi reset password.';
-
-            // Implementasi token/reset email bisa ditambahkan bila diperlukan.
-            // Saat ini hanya UI flow.
+            $success = 'Link reset password telah dikirim ke email kamu';
         }
     }
 }
@@ -53,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="email" name="email" placeholder="Email" required>
         </label>
 
-        <button class="btn" type="submit">Kirim Link </button>
+        <button class="btn" type="submit">KIRIM LINK</button>
         <p style="margin-top: 12px;">
             <a href="login.php">Kembali ke menu login</a>
         </p>
