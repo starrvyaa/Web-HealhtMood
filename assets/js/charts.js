@@ -1,338 +1,267 @@
-/* =========================================
-   HEALTHMOOD — CHARTS.JS (Redesigned v2)
-   Sleep : horizontal rounded bar chart
-   Mood  : smooth line chart + gradient fill
-========================================= */
+const chartTheme = {
+    mood: '#6d5df3',
+    moodFillTop: 'rgba(109, 93, 243, 0.28)',
+    moodFillBottom: 'rgba(109, 93, 243, 0.02)',
+    sleep: '#5d4bf2',
+    sleepTrack: 'rgba(109, 93, 243, 0.14)',
+    grid: 'rgba(48, 72, 88, 0.08)',
+    label: '#9aa8b0',
+    title: '#142f42'
+};
 
-/* ── Helpers ── */
-function getDayName(dateStr) {
-    const days = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-    return days[new Date(dateStr).getDay()];
+function formatDay(dateValue) {
+    const date = new Date(`${dateValue}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return String(dateValue).slice(5);
+    return date.toLocaleDateString('id-ID', { weekday: 'short' });
 }
 
-function drawRoundedRect(ctx, x, y, w, h, r, color) {
-    if (w < 1 || h < 1) return;
-    r = Math.min(r, w / 2, h / 2);
+function fitCanvas(canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.max(320, Math.round(rect.width || canvas.width));
+    const height = Math.max(230, Math.round(rect.height || 260));
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, width, height };
+}
+
+function drawRoundRect(ctx, x, y, width, height, radius) {
+    const r = Math.min(radius, width / 2, height / 2);
     ctx.beginPath();
     ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.arcTo(x + width, y, x + width, y + height, r);
+    ctx.arcTo(x + width, y + height, x, y + height, r);
+    ctx.arcTo(x, y + height, x, y, r);
+    ctx.arcTo(x, y, x + width, y, r);
     ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
 }
 
-/* ── Resize canvas to CSS size, return logical size ── */
-function resizeCanvas(canvas) {
-    const dpr  = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const W    = Math.floor(rect.width)  || 480;
-    const H    = Math.floor(rect.height) || 220;
-    if (canvas.width !== W * dpr || canvas.height !== H * dpr) {
-        canvas.width  = W * dpr;
-        canvas.height = H * dpr;
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
-    }
-    return { ctx: canvas.getContext('2d'), W, H };
+function drawEmpty(ctx, width, height) {
+    ctx.fillStyle = chartTheme.label;
+    ctx.font = '600 13px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Belum ada data.', width / 2, height / 2);
 }
 
-/* =========================================
-   SLEEP CHART — Horizontal Rounded Bars
-========================================= */
-function drawSleepChart(canvas, rows) {
-    const { ctx, W, H } = resizeCanvas(canvas);
-    ctx.clearRect(0, 0, W, H);
+function drawGrid(ctx, area, lines, maxValue, suffix = '') {
+    ctx.strokeStyle = chartTheme.grid;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = chartTheme.label;
+    ctx.font = '600 11px Arial';
+    ctx.textAlign = 'right';
 
-    /* colours */
-    const C_TRACK  = 'rgba(255,255,255,0.45)';
-    const C_BAR    = '#2f5c70';
-    const C_TEXT   = '#1e3a48';
-    const C_MUTED  = '#6899aa';
-    const MAX_H    = 10;
-    const CORNER   = 9;
-    const BAR_H    = 20;
-
-    /* layout */
-    const PAD_L  = 54;   /* room for day label */
-    const PAD_R  = 46;   /* room for "8 j" label */
-    const PAD_T  = 14;
-    const PAD_B  = 10;
-    const trackW = W - PAD_L - PAD_R;
-    const n      = rows.length;
-
-    if (!n) {
-        ctx.fillStyle = C_MUTED;
-        ctx.font = '14px system-ui';
-        ctx.fillText('Belum ada data tidur.', PAD_L, H / 2);
-        return;
-    }
-
-    const rowH = (H - PAD_T - PAD_B) / n;
-
-    rows.forEach((row, i) => {
-        const val  = Math.min(parseFloat(row.value) || 0, MAX_H);
-        const day  = getDayName(row.date);
-        const cy   = PAD_T + i * rowH + rowH / 2;
-        const barY = cy - BAR_H / 2;
-        const fill = (val / MAX_H) * trackW;
-
-        /* day label */
-        ctx.fillStyle    = C_TEXT;
-        ctx.font         = '700 13px "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign    = 'right';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(day, PAD_L - 10, cy);
-
-        /* track (background) */
-        drawRoundedRect(ctx, PAD_L, barY, trackW, BAR_H, CORNER, C_TRACK);
-
-        /* filled bar */
-        if (fill >= CORNER * 2) {
-            drawRoundedRect(ctx, PAD_L, barY, fill, BAR_H, CORNER, C_BAR);
-        } else if (val > 0) {
-            drawRoundedRect(ctx, PAD_L, barY, CORNER * 2, BAR_H, CORNER, C_BAR);
-        }
-
-        /* value label */
-        ctx.fillStyle    = val > 0 ? C_TEXT : C_MUTED;
-        ctx.font         = '600 12px "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign    = 'left';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(val > 0 ? `${val} j` : '—', PAD_L + trackW + 8, cy);
-    });
-}
-
-/* =========================================
-   MOOD CHART — Smooth Line + Gradient Fill
-========================================= */
-function drawMoodChart(canvas, rows) {
-    const { ctx, W, H } = resizeCanvas(canvas);
-    ctx.clearRect(0, 0, W, H);
-
-    const C_LINE  = '#2b6fa8';
-    const C_DOT_F = '#ffffff';
-    const C_DOT_S = '#2b6fa8';
-    const C_TEXT  = '#1e3a48';
-    const C_MUTED = '#6899aa';
-    const C_GRID  = 'rgba(43,111,168,0.12)';
-    const MAX_VAL = 5;
-
-    const PAD_L  = 16;
-    const PAD_R  = 16;
-    const PAD_T  = 26;   /* room for score labels above dots */
-    const PAD_B  = 28;   /* room for day labels below */
-    const chartW = W - PAD_L - PAD_R;
-    const chartH = H - PAD_T - PAD_B;
-    const n      = rows.length;
-
-    if (!n) {
-        ctx.fillStyle = C_MUTED;
-        ctx.font = '14px system-ui';
-        ctx.fillText('Belum ada data mood.', PAD_L, H / 2);
-        return;
-    }
-
-    /* map rows → canvas coords */
-    const pts = rows.map((row, i) => {
-        const val = parseFloat(row.value) || 0;
-        const x   = n > 1
-            ? PAD_L + (i / (n - 1)) * chartW
-            : PAD_L + chartW / 2;
-        const y   = val > 0
-            ? PAD_T + chartH - (val / MAX_VAL) * chartH
-            : null;
-        return { x, y, val, date: row.date };
-    });
-
-    /* horizontal grid lines */
-    [1, 2, 3, 4, 5].forEach(v => {
-        const gy = PAD_T + chartH - (v / MAX_VAL) * chartH;
-        ctx.strokeStyle = C_GRID;
-        ctx.lineWidth   = 1;
+    for (let i = 0; i <= lines; i++) {
+        const value = maxValue - (maxValue / lines) * i;
+        const y = area.top + (area.height / lines) * i;
         ctx.beginPath();
-        ctx.moveTo(PAD_L, gy);
-        ctx.lineTo(PAD_L + chartW, gy);
+        ctx.setLineDash([6, 8]);
+        ctx.moveTo(area.left, y);
+        ctx.lineTo(area.right, y);
         ctx.stroke();
-    });
-
-    /* split into contiguous segments (skip null/zero) */
-    const segs = [];
-    let seg = [];
-    pts.forEach((pt, i) => {
-        if (pt.y !== null) {
-            seg.push(pt);
-        } else {
-            if (seg.length) { segs.push(seg); seg = []; }
-        }
-        if (i === pts.length - 1 && seg.length) segs.push(seg);
-    });
-
-    segs.forEach(seg => {
-        if (!seg.length) return;
-
-        /* gradient fill */
-        const grad = ctx.createLinearGradient(0, PAD_T, 0, PAD_T + chartH);
-        grad.addColorStop(0, 'rgba(43,111,168,0.32)');
-        grad.addColorStop(1, 'rgba(43,111,168,0.00)');
-
-        ctx.beginPath();
-        catmullRomPath(ctx, seg);
-        ctx.lineTo(seg[seg.length - 1].x, PAD_T + chartH);
-        ctx.lineTo(seg[0].x, PAD_T + chartH);
-        ctx.closePath();
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        /* line stroke */
-        ctx.beginPath();
-        catmullRomPath(ctx, seg);
-        ctx.strokeStyle = C_LINE;
-        ctx.lineWidth   = 2.5;
-        ctx.lineJoin    = 'round';
-        ctx.lineCap     = 'round';
-        ctx.stroke();
-
-        /* dots + score labels */
-        seg.forEach(pt => {
-            /* score above dot */
-            ctx.fillStyle    = C_TEXT;
-            ctx.font         = '600 11px "Segoe UI", system-ui, sans-serif';
-            ctx.textAlign    = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText(pt.val, pt.x, pt.y - 7);
-
-            /* dot */
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2);
-            ctx.fillStyle   = C_DOT_F;
-            ctx.fill();
-            ctx.strokeStyle = C_DOT_S;
-            ctx.lineWidth   = 2.5;
-            ctx.stroke();
-        });
-    });
-
-    /* day labels at bottom */
-    pts.forEach(pt => {
-        ctx.fillStyle    = C_MUTED;
-        ctx.font         = '600 11px "Segoe UI", system-ui, sans-serif';
-        ctx.textAlign    = 'center';
-        ctx.textBaseline = 'top';
-        ctx.fillText(getDayName(pt.date), pt.x, PAD_T + chartH + 6);
-    });
-}
-
-/* Catmull-Rom smooth path */
-function catmullRomPath(ctx, pts) {
-    if (pts.length === 1) { ctx.moveTo(pts[0].x, pts[0].y); return; }
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 0; i < pts.length - 1; i++) {
-        const p0 = pts[i - 1] || pts[i];
-        const p1 = pts[i];
-        const p2 = pts[i + 1];
-        const p3 = pts[i + 2] || p2;
-        const cp1x = p1.x + (p2.x - p0.x) / 6;
-        const cp1y = p1.y + (p2.y - p0.y) / 6;
-        const cp2x = p2.x - (p3.x - p1.x) / 6;
-        const cp2y = p2.y - (p3.y - p1.y) / 6;
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+        ctx.setLineDash([]);
+        ctx.fillText(`${Math.round(value)}${suffix}`, area.left - 10, y + 4);
     }
 }
 
-/* =========================================
-   MOOD TOOLTIP on hover
-========================================= */
-function attachMoodTooltip(canvas, rows) {
-    const MAX_VAL = 5;
-    const PAD_L   = 16, PAD_R = 16, PAD_T = 26, PAD_B = 28;
-    const HIT     = 20;
-
-    let tip = document.getElementById('_hm_tip');
-    if (!tip) {
-        tip = document.createElement('div');
-        tip.id = '_hm_tip';
-        Object.assign(tip.style, {
-            position:'fixed', pointerEvents:'none',
-            background:'#1e3a48', color:'#fff',
-            padding:'5px 11px', borderRadius:'8px',
-            fontSize:'12px', fontWeight:'700',
-            opacity:'0', transition:'opacity .15s',
-            zIndex:'9999', whiteSpace:'nowrap',
-            boxShadow:'0 3px 10px rgba(0,0,0,.25)',
-        });
-        document.body.appendChild(tip);
-    }
-
-    canvas.addEventListener('mousemove', e => {
-        const rect   = canvas.getBoundingClientRect();
-        const mx     = e.clientX - rect.left;
-        const my     = e.clientY - rect.top;
-        const n      = rows.length;
-        const chartW = rect.width  - PAD_L - PAD_R;
-        const chartH = rect.height - PAD_T  - PAD_B;
-        let hit = null;
-        rows.forEach((row, i) => {
-            const val = parseFloat(row.value) || 0;
-            if (!val) return;
-            const x = n > 1 ? PAD_L + (i / (n-1)) * chartW : PAD_L + chartW/2;
-            const y = PAD_T + chartH - (val / MAX_VAL) * chartH;
-            if (Math.hypot(mx-x, my-y) < HIT) hit = { row, val };
-        });
-        if (hit) {
-            tip.textContent = `${getDayName(hit.row.date)}  ${hit.row.date.slice(5)} · Mood ${hit.val}/5`;
-            tip.style.left    = (e.clientX + 14) + 'px';
-            tip.style.top     = (e.clientY - 32) + 'px';
-            tip.style.opacity = '1';
-            canvas.style.cursor = 'crosshair';
-        } else {
-            tip.style.opacity = '0';
-            canvas.style.cursor = 'default';
-        }
-    });
-    canvas.addEventListener('mouseleave', () => { tip.style.opacity = '0'; });
-}
-
-/* =========================================
-   LOAD + AUTO-REFRESH
-========================================= */
-async function loadCharts() {
-    const moodEl  = document.getElementById('moodChart');
-    const sleepEl = document.getElementById('sleepChart');
-    const updated = document.getElementById('chartUpdated');
-    if (!moodEl || !sleepEl) return;
-
-    try {
-        const res  = await fetch('api_stats.php', { cache: 'no-store' });
-        const data = await res.json();
-
-        if (data.error) {
-            if (updated) { updated.textContent = data.error; updated.className = 'message error'; }
+function makeSmoothPath(ctx, points) {
+    points.forEach((point, index) => {
+        if (index === 0) {
+            ctx.moveTo(point.x, point.y);
             return;
         }
 
-        drawSleepChart(sleepEl, data.sleep);
-        drawMoodChart(moodEl,   data.mood);
-        attachMoodTooltip(moodEl, data.mood);
+        const previous = points[index - 1];
+        const midX = (previous.x + point.x) / 2;
+        ctx.bezierCurveTo(midX, previous.y, midX, point.y, point.x, point.y);
+    });
+}
+
+function drawAreaChart(canvas, rows, options) {
+    const { ctx, width, height } = fitCanvas(canvas);
+    const area = {
+        left: 54,
+        top: 52,
+        right: width - 24,
+        bottom: height - 38
+    };
+    area.width = area.right - area.left;
+    area.height = area.bottom - area.top;
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.fillStyle = chartTheme.title;
+    ctx.font = '800 15px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(options.title, 22, 28);
+
+    ctx.fillStyle = chartTheme.label;
+    ctx.font = '600 12px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText('Minggu ini', width - 22, 28);
+
+    if (!rows.length) {
+        drawEmpty(ctx, width, height);
+        return;
+    }
+
+    const maxValue = options.maxValue;
+    drawGrid(ctx, area, 4, maxValue);
+
+    const points = rows.slice(-7).map((row, index, list) => {
+        const value = Math.max(0, Math.min(maxValue, Number(row.value) || 0));
+        return {
+            x: area.left + (area.width / Math.max(1, list.length - 1)) * index,
+            y: area.bottom - (value / maxValue) * area.height,
+            value,
+            label: formatDay(row.date)
+        };
+    });
+
+    const gradient = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    gradient.addColorStop(0, chartTheme.moodFillTop);
+    gradient.addColorStop(1, chartTheme.moodFillBottom);
+
+    ctx.beginPath();
+    makeSmoothPath(ctx, points);
+    ctx.lineTo(points[points.length - 1].x, area.bottom);
+    ctx.lineTo(points[0].x, area.bottom);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    ctx.beginPath();
+    makeSmoothPath(ctx, points);
+    ctx.strokeStyle = options.color;
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    const best = points.reduce((top, point) => point.value > top.value ? point : top, points[0]);
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = 'rgba(109, 93, 243, 0.2)';
+    ctx.shadowBlur = 16;
+    drawRoundRect(ctx, best.x - 42, Math.max(36, best.y - 54), 84, 36, 8);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = options.color;
+    ctx.font = '800 13px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${best.value.toFixed(1)}`, best.x, Math.max(58, best.y - 32));
+    ctx.fillStyle = chartTheme.label;
+    ctx.font = '600 10px Arial';
+    ctx.fillText('tertinggi', best.x, Math.max(72, best.y - 18));
+
+    ctx.fillStyle = chartTheme.label;
+    ctx.font = '600 11px Arial';
+    points.forEach((point) => ctx.fillText(point.label, point.x, height - 14));
+}
+
+function drawBarChart(canvas, rows, options) {
+    const { ctx, width, height } = fitCanvas(canvas);
+    const area = {
+        left: 48,
+        top: 52,
+        right: width - 24,
+        bottom: height - 36
+    };
+    area.width = area.right - area.left;
+    area.height = area.bottom - area.top;
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.fillStyle = chartTheme.title;
+    ctx.font = '800 15px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(options.title, 22, 28);
+
+    ctx.fillStyle = chartTheme.label;
+    ctx.font = '600 12px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText('Minggu ini', width - 22, 28);
+
+    if (!rows.length) {
+        drawEmpty(ctx, width, height);
+        return;
+    }
+
+    const maxValue = options.maxValue;
+    drawGrid(ctx, area, 4, maxValue, 'j');
+
+    const data = rows.slice(-7);
+    const slot = area.width / data.length;
+    const barWidth = Math.min(24, slot * 0.32);
+
+    data.forEach((row, index) => {
+        const value = Math.max(0, Math.min(maxValue, Number(row.value) || 0));
+        const x = area.left + slot * index + slot / 2 - barWidth / 2;
+        const trackHeight = area.height * 0.82;
+        const trackY = area.bottom - trackHeight;
+        const barHeight = Math.max(10, (value / maxValue) * trackHeight);
+        const y = area.bottom - barHeight;
+
+        ctx.fillStyle = chartTheme.sleepTrack;
+        drawRoundRect(ctx, x, trackY, barWidth, trackHeight, barWidth / 2);
+        ctx.fill();
+
+        const gradient = ctx.createLinearGradient(0, y, 0, area.bottom);
+        gradient.addColorStop(0, '#7d6cff');
+        gradient.addColorStop(1, options.color);
+        ctx.fillStyle = gradient;
+        drawRoundRect(ctx, x, y, barWidth, barHeight, barWidth / 2);
+        ctx.fill();
+
+        ctx.fillStyle = chartTheme.label;
+        ctx.font = '600 11px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(formatDay(row.date), x + barWidth / 2, height - 14);
+    });
+}
+
+async function loadCharts() {
+    const moodCanvas = document.getElementById('moodChart');
+    const sleepCanvas = document.getElementById('sleepChart');
+    const updated = document.getElementById('chartUpdated');
+
+    if (!moodCanvas || !sleepCanvas) return;
+
+    try {
+        const response = await fetch('api_stats.php', { cache: 'no-store' });
+        const data = await response.json();
+
+        if (data.error) {
+            if (updated) {
+                updated.textContent = data.error;
+                updated.classList.add('error');
+            }
+            return;
+        }
+
+        drawBarChart(sleepCanvas, data.sleep, {
+            color: chartTheme.sleep,
+            maxValue: 12,
+            title: 'Pola Tidur'
+        });
+        drawAreaChart(moodCanvas, data.mood, {
+            color: chartTheme.mood,
+            maxValue: 5,
+            title: 'Grafik Mood'
+        });
 
         if (updated) {
-            updated.textContent = 'Terakhir diperbarui pukul ' + data.updated_at;
-            updated.className   = 'chart-updated';
+            updated.textContent = `Grafik terakhir diperbarui pukul ${data.updated_at}`;
+            updated.classList.remove('error');
         }
-    } catch {
-        if (updated) { updated.textContent = 'Grafik gagal dimuat.'; updated.className = 'message error'; }
+    } catch (error) {
+        if (updated) {
+            updated.textContent = 'Grafik gagal dimuat.';
+            updated.classList.add('error');
+        }
     }
 }
 
-/* redraw on resize */
-let _rt;
-window.addEventListener('resize', () => { clearTimeout(_rt); _rt = setTimeout(loadCharts, 150); });
-
 loadCharts();
 setInterval(loadCharts, 10000);
+window.addEventListener('resize', loadCharts);
