@@ -58,13 +58,17 @@ require 'includes/header.php';
         <!-- SLEEP -->
         <div class="mini-chart">
 
-            <h3>
-                Pola Tidur Minggu Ini
-            </h3>
-
-            <small>
-                Durasi tidur harian (jam)
-            </small>
+            <div class="chart-card-head">
+                <div>
+                    <h3>Pola Tidur</h3>
+                    <small>Durasi tidur harian (jam)</small>
+                </div>
+                <select class="chart-filter" data-chart-filter="sleep" aria-label="Filter grafik tidur">
+                    <option value="7">Minggu ini</option>
+                    <option value="14">14 hari</option>
+                    <option value="30">Bulan ini</option>
+                </select>
+            </div>
 
             <canvas
                 id="sleepChart"
@@ -72,24 +76,36 @@ require 'includes/header.php';
                 height="220"
             ></canvas>
 
+            <p class="chart-help">
+                Cara baca: semakin panjang garis biru, semakin lama durasi tidur pada hari tersebut.
+            </p>
+
         </div>
 
         <!-- MOOD -->
         <div class="mini-chart">
 
-            <h3>
-                Grafik Mood Minggu Ini
-            </h3>
-
-            <small>
-                Skor harian (1-5)
-            </small>
+            <div class="chart-card-head">
+                <div>
+                    <h3>Grafik Mood</h3>
+                    <small>Skor harian (1-5)</small>
+                </div>
+                <select class="chart-filter" data-chart-filter="mood" aria-label="Filter grafik mood">
+                    <option value="7">Minggu ini</option>
+                    <option value="14">14 hari</option>
+                    <option value="30">Bulan ini</option>
+                </select>
+            </div>
 
             <canvas
                 id="moodChart"
                 width="520"
                 height="220"
             ></canvas>
+
+            <p class="chart-help">
+                Cara baca: garis yang naik berarti mood membaik, skor 5 adalah kondisi paling positif.
+            </p>
 
         </div>
 
