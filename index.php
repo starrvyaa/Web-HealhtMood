@@ -64,9 +64,9 @@ require 'includes/header.php';
                     <small>Durasi tidur harian (jam)</small>
                 </div>
                 <select class="chart-filter" data-chart-filter="sleep" aria-label="Filter grafik tidur">
-                    <option value="7">Minggu ini</option>
-                    <option value="14">14 hari</option>
-                    <option value="30">Bulan ini</option>
+                    <option value="7">Minggu</option>
+                    <option value="14">14 Hari</option>
+                    <option value="30">Bulan</option>
                 </select>
             </div>
 
@@ -91,9 +91,9 @@ require 'includes/header.php';
                     <small>Skor harian (1-5)</small>
                 </div>
                 <select class="chart-filter" data-chart-filter="mood" aria-label="Filter grafik mood">
-                    <option value="7">Minggu ini</option>
-                    <option value="14">14 hari</option>
-                    <option value="30">Bulan ini</option>
+                    <option value="7">Minggu</option>
+                    <option value="14">14 Hari</option>
+                    <option value="30">Bulan</option>
                 </select>
             </div>
 
